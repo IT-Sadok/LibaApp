@@ -47,7 +47,7 @@ namespace LibraryApp
 
                     case "3":
                         Console.Clear();
-                        Console.Write("Search: ");
+                        Console.Write("Search: "); // test1
                         var results = library.Search(Console.ReadLine());
                         foreach (var b in results)
                             Console.WriteLine($"{b.Title} - {b.Author} ({b.Year}) | {(b.IsAvailable ? "Avalible" : "Not Avalible")}");
