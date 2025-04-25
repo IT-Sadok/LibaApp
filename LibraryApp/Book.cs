@@ -9,7 +9,7 @@ namespace LibraryApp
     public class Book
     {
         public string Title { get; set; } //test2
-        public string Author { get; set; }
+        public string Author { get; set; }//test3
         public int Year { get; set; }
         public string Code { get; set; }
         public bool IsAvailable { get; set; } = true;
