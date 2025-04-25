@@ -8,8 +8,6 @@ namespace LibraryApp
 {
     internal class test
     {
-        //add_test_class
-        //in progress_change1
-        //in progress_change2
+        //ready to master
     }
 }
