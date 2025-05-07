@@ -4,7 +4,7 @@
     
     internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Hospital[] hospitals = new Hospital[3];
             hospitals[0] = new Hospital
@@ -42,7 +42,7 @@
             Menu(hospitals);
         }
 
-        static void Menu(Hospital[] hospitals)
+        private static void Menu(Hospital[] hospitals)
         {
             Console.Clear();
             Console.WriteLine("1. Hospital's List");
@@ -75,7 +75,7 @@
             }
         }
 
-        static void HospitalList(Hospital[] hospitals)
+        private static void HospitalList(Hospital[] hospitals)
         {
             Console.WriteLine("Hospitals:");
             foreach (var hospital in hospitals)
@@ -84,7 +84,7 @@
             }
         }
 
-        static void SearchHospital(Hospital[] hospitals)
+        private static void SearchHospital(Hospital[] hospitals)
         {
             Console.Clear();
             Console.WriteLine("Enter ID of the hospital to search:");
