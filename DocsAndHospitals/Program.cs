@@ -1,42 +1,78 @@
 ﻿namespace DocsAndHospitals
 {
 
-    public class Doctor
-    {
-        public int KNumber { get; set; }
-        public string Name { get; set; }
-        public string Specialization { get; set; }
-        public Doctor(int knumber, string name, string specialization)
-        {
-            KNumber = knumber;
-            Name = name;
-            Specialization = specialization;
-        }
-    }
-    class Hospital
-    {
-        public int KNumber { get; set; }    
-        public string Name { get; set; }
-        public string Address { get; set; }
-        public string PhoneNumber { get; set; }
-        public List<Doctor> Doctors { get; set; }
-        public Hospital(int knumber, string name, string address, string phoneNumber)
-        {
-            KNumber = knumber;
-            Name = name;
-            Address = address;
-            PhoneNumber = phoneNumber;
-            Doctors = new List<Doctor>();
-        }
-    }
+    
     internal class Program
     {
-        static void Menu()
+        static void Main(string[] args)
+        {
+            Hospital[] hospitals = new Hospital[3];
+            hospitals[0] = new Hospital
+            {
+                KNumber = 0,
+                Name = "City Hospital",
+                Address = "123 Main St",
+                PhoneNumber = "555-1234",
+                Doctors = new List<Doctor>
+        {
+            new Doctor { KNumber = 0, Name = "Dr. Smith", Specialization = "Cardiologist" },
+            new Doctor { KNumber = 2, Name = "Dr. Brown", Specialization = "Neurologist" }
+        }
+            };
+            hospitals[1] = new Hospital
+            {
+                KNumber = 1,
+                Name = "County Hospital",
+                Address = "456 Elm St",
+                PhoneNumber = "555-5678",
+                Doctors = new List<Doctor>()
+            };
+            hospitals[2] = new Hospital
+            {
+                KNumber = 2,
+                Name = "State Hospital",
+                Address = "789 Oak St",
+                PhoneNumber = "555-9012",
+                Doctors = new List<Doctor>
+        {
+            new Doctor { KNumber = 3, Name = "Dr. Wilson", Specialization = "Pediatrician" },
+            new Doctor { KNumber = 4, Name = "Dr. Johnson", Specialization = "Orthopedic" }
+        }
+            };
+            Menu(hospitals);
+        }
+
+        static void Menu(Hospital[] hospitals)
         {
             Console.Clear();
             Console.WriteLine("1. Hospital's List");
             Console.WriteLine("2. Search Hospital by Id");
             Console.WriteLine("3. Exit");
+
+
+            Console.WriteLine("Enter your choice:");
+            int choice = Convert.ToInt32(Console.ReadLine());
+            switch (choice)
+            {
+                case 1:
+                    HospitalList(hospitals);
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadKey();
+                    Menu(hospitals);
+                    break;
+                case 2:
+                    SearchHospital(hospitals);
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadKey();
+                    Menu(hospitals);
+                    break;
+                case 3:
+                    Console.WriteLine("Exiting...");
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    break;
+            }
         }
 
         static void HospitalList(Hospital[] hospitals)
@@ -50,11 +86,11 @@
 
         static void SearchHospital(Hospital[] hospitals)
         {
-            Console.Clear();    
+            Console.Clear();
             Console.WriteLine("Enter ID of the hospital to search:");
             int SearchID = Convert.ToInt32(Console.ReadLine());
-            bool foundHosp = false;
-            bool foundDoc = false;  
+            var foundHosp = false;
+            var foundDoc = false;
             foreach (var hospital in hospitals)
             {
                 if (hospital.KNumber == SearchID)
@@ -82,41 +118,5 @@
             }
         }
 
-        static void Main(string[] args)
-        {
-            Hospital[] hospitals = new Hospital[3];
-            hospitals[0] = new Hospital(0, "City Hospital", "123 Main St", "555-1234");
-            hospitals[0].Doctors.Add(new Doctor(0, "Dr. Smith", "Cardiologist"));
-            hospitals[0].Doctors.Add(new Doctor(2, "Dr. Brown", "Neurologist"));
-            hospitals[1] = new Hospital(1, "County Hospital", "456 Elm St", "555-5678");
-            hospitals[2] = new Hospital(2, "State Hospital", "789 Oak St", "555-9012");
-            hospitals[2].Doctors.Add(new Doctor(3, "Dr. Wilson", "Pediatrician"));
-            hospitals[2].Doctors.Add(new Doctor(4, "Dr. Johnson", "Orthopedic"));
-        again:
-            Menu();
-            Console.WriteLine("Enter your choice:");
-            int choice = Convert.ToInt32(Console.ReadLine());
-            switch (choice)
-            {
-                case 1:
-                    HospitalList(hospitals);
-                    Console.WriteLine("Press any key to continue...");
-                    Console.ReadKey(); 
-                    goto again;
-                case 2:
-                    SearchHospital(hospitals);
-                    Console.WriteLine("Press any key to continue...");
-                    Console.ReadKey(); 
-                    goto again;
-                case 3:
-                    Console.WriteLine("Exiting...");
-                    break;
-                default:
-                    Console.WriteLine("Invalid choice. Please try again.");
-                    break;
-            }
-       
-
-        }
     }
 }
