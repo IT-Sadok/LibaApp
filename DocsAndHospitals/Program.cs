@@ -130,6 +130,7 @@
                             Console.WriteLine("2. Address");
                             Console.WriteLine("3. Phone Number");
                             Console.WriteLine("4. Doctors");
+                            Console.WriteLine("5. Delete Hospital");
                             Console.WriteLine("Enter your choice:");
                             int updateChoice = Convert.ToInt32(Console.ReadLine());
 
@@ -163,6 +164,7 @@
                                             Console.WriteLine("What would you like to update?");
                                             Console.WriteLine("1. Name");
                                             Console.WriteLine("2. Specialization");
+                                            Console.WriteLine("3. Delete Doctor");
                                             Console.WriteLine("Enter your choice:");
                                             int docUpdateChoice = Convert.ToInt32(Console.ReadLine());
                                             switch (docUpdateChoice)
@@ -177,6 +179,10 @@
                                                     doctorToUpdate.Specialization = Console.ReadLine();
                                                     Console.WriteLine("Doctor specialization updated successfully.");
                                                     break;
+                                                case 3:
+                                                    hospitalToUpdate.Doctors.Remove(doctorToUpdate);
+                                                    Console.WriteLine("Doctor deleted successfully.");
+                                                    break;  
                                                 default:
                                                     Console.WriteLine("Invalid choice. No updates made.");
                                                     break;
@@ -187,6 +193,19 @@
                                             Console.WriteLine("Doctor not found. Please try again.");
                                         }
                                     } while (!doctorFound);
+                                    break;
+                                case 5:
+                                    Console.WriteLine("Are you sure you want to delete this hospital? (y/n)");
+                                    string confirmDelete = Console.ReadLine();
+                                    if (confirmDelete.ToLower() == "y")
+                                    {
+                                        hospitals = hospitals.Where(h => h.KNumber != updateId).ToArray();
+                                        Console.WriteLine("Hospital deleted successfully.");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Deletion cancelled.");
+                                    }
                                     break;
                                 default:
                                     Console.WriteLine("Invalid choice. No updates made.");
