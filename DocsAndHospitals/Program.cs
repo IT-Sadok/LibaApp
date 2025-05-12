@@ -1,7 +1,7 @@
 ﻿namespace DocsAndHospitals
 {
 
-    
+
     internal class Program
     {
         static void Main(string[] args)
@@ -42,6 +42,7 @@
             Menu(hospitals);
         }
 
+
         private static void Menu(Hospital[] hospitals)
         {
             Console.Clear();
@@ -50,10 +51,10 @@
             Console.WriteLine("3. Add hospital");
             Console.WriteLine("4. Update hospital by id");
             Console.WriteLine("5. Exit");
-
-
             Console.WriteLine("Enter your choice:");
-            int choice = Convert.ToInt32(Console.ReadLine());
+            int choice = CheckCorrectId("menu");
+
+
             switch (choice)
             {
                 case 1:
@@ -64,21 +65,7 @@
                     break;
                 case 2:
                     Console.WriteLine("Enter ID of the hospital to search:");
-                    int SearchID = -1;
-                    var goodId = int.TryParse(Console.ReadLine(), out SearchID);
-                    do
-                    {
-                        if (SearchID != -1 && goodId)
-                        {
-                            goodId = true;  
-                            SearchHospital(hospitals, SearchID);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid ID. Please enter a valid number.");
-                            goodId = int.TryParse(Console.ReadLine(), out SearchID);
-                        }
-                    } while (!goodId);
+                    int SearchID = CheckCorrectId();
                     SearchHospital(hospitals, SearchID);
                     Console.WriteLine("Press any key to continue...");
                     Console.ReadKey();
@@ -86,137 +73,13 @@
                     break;
                 case 3:
                     Console.Clear();
-                    Console.WriteLine("Enter hospital ID:");
-                    int id = Convert.ToInt32(Console.ReadLine());
-                    Console.WriteLine("Enter hospital name:");
-                    string name = Console.ReadLine();
-                    Console.WriteLine("Enter hospital address:");
-                    string address = Console.ReadLine();
-                    Console.WriteLine("Enter hospital phone number:");
-                    string phoneNumber = Console.ReadLine();
-                    Array.Resize(ref hospitals, hospitals.Length + 1);
-                    hospitals[hospitals.Length - 1] = new Hospital
-                    {
-                        KNumber = id,
-                        Name = name,
-                        Address = address,
-                        PhoneNumber = phoneNumber,
-                        Doctors = new List<Doctor>()
-                    };
-                    Console.WriteLine("Hospital added successfully.");
+                    AddHospital(ref hospitals);
                     Console.ReadKey();
                     Menu(hospitals);
                     break;
-                case 4: 
-                    var hospitalFound = false;
-                    do
-                    {
-                        Console.Clear();
-                        int updateId = -1;
-                        var FoundId = false;
-                        do
-                        {
-                            Console.WriteLine("Enter the ID of the hospital to update:");
-                            FoundId = int.TryParse(Console.ReadLine(), out updateId);
-                        }
-                        while (!FoundId);
-                        SearchHospital(hospitals, updateId);
-                        var hospitalToUpdate = hospitals.FirstOrDefault(h => h.KNumber == updateId);
-                        if (hospitalToUpdate != null)
-                        {
-                            hospitalFound = true;
-                            Console.WriteLine("What would you like to update?");
-                            Console.WriteLine("1. Name");
-                            Console.WriteLine("2. Address");
-                            Console.WriteLine("3. Phone Number");
-                            Console.WriteLine("4. Doctors");
-                            Console.WriteLine("5. Delete Hospital");
-                            Console.WriteLine("Enter your choice:");
-                            int updateChoice = Convert.ToInt32(Console.ReadLine());
-
-                            switch (updateChoice)
-                            {
-                                case 1:
-                                    Console.WriteLine("Enter new hospital name:");
-                                    hospitalToUpdate.Name = Console.ReadLine();
-                                    Console.WriteLine("Hospital name updated successfully.");
-                                    break;
-                                case 2:
-                                    Console.WriteLine("Enter new hospital address:");
-                                    hospitalToUpdate.Address = Console.ReadLine();
-                                    Console.WriteLine("Hospital address updated successfully.");
-                                    break;
-                                case 3:
-                                    Console.WriteLine("Enter new hospital phone number:");
-                                    hospitalToUpdate.PhoneNumber = Console.ReadLine();
-                                    Console.WriteLine("Hospital phone number updated successfully.");
-                                    break;
-                                case 4:
-                                    var doctorFound = false;
-                                    do
-                                    {
-                                        Console.WriteLine("Enter the ID of the doctor to update:");
-                                        var doctorId = int.TryParse(Console.ReadLine(), out int docId) ? docId : -1;
-                                        var doctorToUpdate = hospitalToUpdate.Doctors.FirstOrDefault(d => d.KNumber == doctorId);
-                                        if (doctorToUpdate != null && doctorId != -1)
-                                        {
-                                            doctorFound = true;
-                                            Console.WriteLine("What would you like to update?");
-                                            Console.WriteLine("1. Name");
-                                            Console.WriteLine("2. Specialization");
-                                            Console.WriteLine("3. Delete Doctor");
-                                            Console.WriteLine("Enter your choice:");
-                                            int docUpdateChoice = Convert.ToInt32(Console.ReadLine());
-                                            switch (docUpdateChoice)
-                                            {
-                                                case 1:
-                                                    Console.WriteLine("Enter new doctor name:");
-                                                    doctorToUpdate.Name = Console.ReadLine();
-                                                    Console.WriteLine("Doctor name updated successfully.");
-                                                    break;
-                                                case 2:
-                                                    Console.WriteLine("Enter new doctor specialization:");
-                                                    doctorToUpdate.Specialization = Console.ReadLine();
-                                                    Console.WriteLine("Doctor specialization updated successfully.");
-                                                    break;
-                                                case 3:
-                                                    hospitalToUpdate.Doctors.Remove(doctorToUpdate);
-                                                    Console.WriteLine("Doctor deleted successfully.");
-                                                    break;  
-                                                default:
-                                                    Console.WriteLine("Invalid choice. No updates made.");
-                                                    break;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Doctor not found. Please try again.");
-                                        }
-                                    } while (!doctorFound);
-                                    break;
-                                case 5:
-                                    Console.WriteLine("Are you sure you want to delete this hospital? (y/n)");
-                                    string confirmDelete = Console.ReadLine();
-                                    if (confirmDelete.ToLower() == "y")
-                                    {
-                                        hospitals = hospitals.Where(h => h.KNumber != updateId).ToArray();
-                                        Console.WriteLine("Hospital deleted successfully.");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Deletion cancelled.");
-                                    }
-                                    break;
-                                default:
-                                    Console.WriteLine("Invalid choice. No updates made.");
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Hospital not found. Please try again.");
-                        }
-                    } while (!hospitalFound);
+                case 4:
+                    Console.Clear();
+                    UpdHospital(ref hospitals);
                     Console.ReadKey();
                     Menu(hospitals);
                     break;
@@ -226,7 +89,187 @@
                     break;
                 default:
                     Console.WriteLine("Invalid choice. Please try again.");
+                    Menu(hospitals);
                     break;
+            }
+        }
+
+
+
+
+
+
+
+
+
+        private static void AddHospital(ref Hospital[] hospitals)
+        {
+            Console.WriteLine("Enter hospital ID:");
+            int id = CheckCorrectId();
+            Console.WriteLine("Enter hospital name:");
+            string name = Console.ReadLine();
+            Console.WriteLine("Enter hospital address:");
+            string address = Console.ReadLine();
+            Console.WriteLine("Enter hospital phone number:");
+            string phoneNumber = Console.ReadLine();
+            Array.Resize(ref hospitals, hospitals.Length + 1);
+            hospitals[hospitals.Length - 1] = new Hospital
+            {
+                KNumber = id,
+                Name = name,
+                Address = address,
+                PhoneNumber = phoneNumber,
+                Doctors = new List<Doctor>()
+            };
+            Console.WriteLine("Hospital added successfully.");
+        }
+
+        private static int CheckCorrectId(string isitmenu = "notmenu")
+        {
+            int SearchID;
+            var goodId = int.TryParse(Console.ReadLine(), out SearchID);
+            do
+            {
+                if (SearchID >= 0 && goodId && isitmenu == "notmenu")
+                {
+                    goodId = true;
+                    return SearchID;
+                }
+                else if (SearchID > 0 && goodId && isitmenu == "menu")
+                {
+                    goodId = true;
+                    return SearchID;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid ID. Please enter a valid number.");
+                    goodId = int.TryParse(Console.ReadLine(), out SearchID);
+                }
+            } while (!goodId || (SearchID <= 0 && isitmenu == "menu"));
+            return SearchID;    
+        }
+
+
+        private static int MenuUpdHospital()
+        {
+            Console.WriteLine("What would you like to update?");
+            Console.WriteLine("1. Name");
+            Console.WriteLine("2. Address");
+            Console.WriteLine("3. Phone Number");
+            Console.WriteLine("4. Doctors");
+            Console.WriteLine("5. Delete Hospital");
+            Console.WriteLine("Enter your choice:");
+            int updateChoice = CheckCorrectId();
+            return updateChoice;
+        }
+
+        private static int MenuUpdDoctor()
+        {
+            Console.WriteLine("What would you like to update?");
+            Console.WriteLine("1. Name");
+            Console.WriteLine("2. Specialization");
+            Console.WriteLine("3. Delete Doctor");
+            Console.WriteLine("Enter your choice:");
+            int updateChoice = CheckCorrectId();
+            return updateChoice;
+        }
+
+        private static void UpdHospital(ref Hospital[] hospitals)
+        {
+            Console.WriteLine("Enter hospital ID to update: ");
+            var hospitalFound = false;
+            do
+            {
+                int updateId = CheckCorrectId();
+                SearchHospital(hospitals, updateId);
+                var hospitalToUpdate = hospitals.FirstOrDefault(h => h.KNumber == updateId);
+                if (hospitalToUpdate != null)
+                {
+                    hospitalFound = true;
+                    int updateChoice = MenuUpdHospital();   
+                    switch (updateChoice)
+                    {
+                        case 1:
+                            Console.WriteLine("Enter new hospital name:");
+                            hospitalToUpdate.Name = Console.ReadLine();
+                            Console.WriteLine("Hospital name updated successfully.");
+                            break;
+                        case 2:
+                            Console.WriteLine("Enter new hospital address:");
+                            hospitalToUpdate.Address = Console.ReadLine();
+                            Console.WriteLine("Hospital address updated successfully.");
+                            break;
+                        case 3:
+                            Console.WriteLine("Enter new hospital phone number:");
+                            hospitalToUpdate.PhoneNumber = Console.ReadLine();
+                            Console.WriteLine("Hospital phone number updated successfully.");
+                            break;
+                        case 4:
+                            var doctorFound = false;
+                            do
+                            {
+                                Console.WriteLine("Enter the ID of the doctor to update:");
+                                var doctorId = CheckCorrectId();    
+                                var doctorToUpdate = hospitalToUpdate.Doctors.FirstOrDefault(d => d.KNumber == doctorId);
+                                if (doctorToUpdate != null && doctorId > 0)
+                                {
+                                    doctorFound = true;
+                                    int docUpdateChoice = MenuUpdDoctor();  
+                                    switch (docUpdateChoice)
+                                    {
+                                        case 1:
+                                            Console.WriteLine("Enter new doctor name:");
+                                            doctorToUpdate.Name = Console.ReadLine();
+                                            Console.WriteLine("Doctor name updated successfully.");
+                                            break;
+                                        case 2:
+                                            Console.WriteLine("Enter new doctor specialization:");
+                                            doctorToUpdate.Specialization = Console.ReadLine();
+                                            Console.WriteLine("Doctor specialization updated successfully.");
+                                            break;
+                                        case 3:
+                                            hospitalToUpdate.Doctors.Remove(doctorToUpdate);
+                                            Console.WriteLine("Doctor deleted successfully.");
+                                            break;
+                                        default:
+                                            Console.WriteLine("Invalid choice. No updates made.");
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Doctor not found. Please try again.");
+                                }
+                            } while (!doctorFound);
+                            break;
+                        case 5:
+                            DeleteHospital(ref hospitals, updateId);    
+                            break;
+                        default:
+                            Console.WriteLine("Invalid choice. No updates made.");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Hospital not found. Please try again.");
+                }
+            } while (!hospitalFound);
+        }
+
+        
+        private static void DeleteHospital(ref Hospital[] hospitals, int deleteId)
+        {
+            Console.WriteLine("Are you sure you want to delete this hospital? (y/n)");
+            string confirmDelete = Console.ReadLine();
+            if (confirmDelete.ToLower() == "y")
+            {
+                hospitals = hospitals.Where(h => h.KNumber != deleteId).ToArray();
+                Console.WriteLine("Hospital deleted successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Deletion cancelled.");
             }
         }
 
