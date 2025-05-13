@@ -180,7 +180,7 @@ public class HospitalService
             Console.WriteLine("4. Update Hospital");
             Console.WriteLine("0. Exit");
             Console.Write("Choice: ");
-            mainchoice = HospitalService.ReadInt();
+            mainchoice = ReadInt();
 
             Console.Clear();
             switch (mainchoice)
