@@ -7,10 +7,5 @@ public class Hospital
     public string Name { get; set; }
     public string Address { get; set; }
     public string PhoneNumber { get; set; }
-    public List<Doctor> Doctors { get; set; }
-
-    public Hospital()
-    {
-        Doctors = new List<Doctor>();
-    }
+    public List<Doctor> Doctors { get; set; } = new();
 }

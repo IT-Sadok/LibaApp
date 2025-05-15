@@ -1,5 +1,7 @@
 ﻿using DocsAndHospitals.Models;
 using DocsAndHospitals.Services;
+using DocsAndHospitals.UI;
+using DocsAndHospitals.Factories;
 
 namespace DocsAndHospitals;
 
@@ -7,44 +9,50 @@ internal class Program
 {
     static void Main()
     {
-        var service = new HospitalService();
-        Hospital[] hospitals = InitializeHospitals();
-        service.MainMenu(ref hospitals);
+        Hospital[] hospitals = HospitalFactory.CreateMany();
+        MainMenu(hospitals);
     }
 
-    private static Hospital[] InitializeHospitals() => new[]
+    private static void MainMenu(Hospital[] hospitals)
     {
-        new Hospital
+        IOutput output = new ConsoleOutput();
+        IInput input = new ConsoleInput();
+        var service = new HospitalService(output, input);
+        int mainchoice = 0;
+        do
         {
-            KNumber = 0,
-            Name = "City Hospital",
-            Address = "123 Main St",
-            PhoneNumber = "555-1234",
-            Doctors = new List<Doctor>
+            output.Clear();
+            output.WriteLine("1. List Hospitals");
+            output.WriteLine("2. Search Hospital");
+            output.WriteLine("3. Add Hospital");
+            output.WriteLine("4. Update Hospital");
+            output.WriteLine("0. Exit");
+            output.Write("Choice: ");
+            mainchoice = input.ReadInt();
+
+            output.Clear();
+            switch (mainchoice)
             {
-                new Doctor { KNumber = 0, Name = "Dr. Smith", Specialization = "Cardiologist" },
-                new Doctor { KNumber = 2, Name = "Dr. Brown", Specialization = "Neurologist" }
+                case 1:
+                    service.DisplayHospitals(hospitals);
+                    break;
+                case 2:
+                    output.Write("Enter ID: ");
+                    int id = input.ReadInt();
+                    service.SearchHospital(hospitals, id);
+                    break;
+                case 3:
+                    service.AddHospital(ref hospitals);
+                    break;
+                case 4:
+                    service.UpdateHospital(ref hospitals);
+                    break;
             }
-        },
-        new Hospital
-        {
-            KNumber = 1,
-            Name = "County Hospital",
-            Address = "456 Elm St",
-            PhoneNumber = "555-5678",
-            Doctors = new List<Doctor>()
-        },
-        new Hospital
-        {
-            KNumber = 2,
-            Name = "State Hospital",
-            Address = "789 Oak St",
-            PhoneNumber = "555-9012",
-            Doctors = new List<Doctor>
-            {
-                new Doctor { KNumber = 3, Name = "Dr. Wilson", Specialization = "Pediatrician" },
-                new Doctor { KNumber = 4, Name = "Dr. Johnson", Specialization = "Orthopedic" }
-            }
-        }
-    };
+
+        } while (mainchoice != 0);
+
+        output.WriteLine("Bye!");
+    }
 }
+
+  

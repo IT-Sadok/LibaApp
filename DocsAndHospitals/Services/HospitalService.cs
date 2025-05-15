@@ -1,208 +1,183 @@
 ﻿using DocsAndHospitals.Models;
 using System;
-namespace DocsAndHospitals.Services;
+using System.Linq;
+using DocsAndHospitals.UI;
 
-public class HospitalService
+namespace DocsAndHospitals.Services
 {
-    public void DisplayHospitals(Hospital[] hospitals)
+    public class HospitalService
     {
-        foreach (var h in hospitals)
-            Console.WriteLine($"ID: {h.KNumber}, Name: {h.Name}, Address: {h.Address}, Phone: {h.PhoneNumber}");
-    }
+        private readonly IOutput _output;
+        private readonly IInput _input;
 
-    public void SearchHospital(Hospital[] hospitals, int id)
-    {
-        var hospital = hospitals.FirstOrDefault(h => h.KNumber == id);
-        if (hospital == null)
+        public HospitalService(IOutput output, IInput input)
         {
-            Console.WriteLine("Hospital not found.");
-            return;
+            _output = output;
+            _input = input;
         }
-        Console.Clear();    
-        Console.WriteLine($"Found hospital: \n{hospital.Name}, Address: {hospital.Address}, Phone: {hospital.PhoneNumber}");
 
-        if (hospital.Doctors.Any())
+        public void DisplayHospitals(Hospital[] hospitals)
         {
-            Console.WriteLine("Doctors:");
-            foreach (var doc in hospital.Doctors)
-                Console.WriteLine($"ID: {doc.KNumber}, Name: {doc.Name}, Specialization: {doc.Specialization}\n");
+            foreach (var h in hospitals)
+                _output.WriteLine($"ID: {h.KNumber}, Name: {h.Name}, Address: {h.Address}, Phone: {h.PhoneNumber}");
+            _output.PressKey(); 
         }
-        else Console.WriteLine("No doctors in this hospital.");
-    }
 
-    public void AddHospital(ref Hospital[] hospitals)
-    {
-        Console.Write("Enter hospital ID: ");
-        int id = ReadInt();
-        Console.Write("Name: ");
-        string name = Console.ReadLine();
-        Console.Write("Address: ");
-        string address = Console.ReadLine();
-        Console.Write("Phone: ");
-        string phone = Console.ReadLine();
-
-        Array.Resize(ref hospitals, hospitals.Length + 1);
-        hospitals[^1] = new Hospital { KNumber = id, Name = name, Address = address, PhoneNumber = phone };
-        Console.WriteLine("Hospital added.");
-
-    }
-
-    public void UpdateHospital(ref Hospital[] hospitals)
-    {
-        Console.Write("Enter hospital ID to update: ");
-        int id = ReadInt();
-
-        var hospital = hospitals.FirstOrDefault(h => h.KNumber == id);
-        if (hospital == null)
+        public void SearchHospital(Hospital[] hospitals, int id)
         {
-            Console.WriteLine("Hospital not found.");
-            return;
-        }
-        
-        int choice;
-        do
-        {
-            var service = new HospitalService();
-            service.SearchHospital(hospitals, id);
-            Console.WriteLine("\nUpdate:");
-            Console.WriteLine("1. Name");
-            Console.WriteLine("2. Address");
-            Console.WriteLine("3. Phone Number");
-            Console.WriteLine("4. Manage Doctors");
-            Console.WriteLine("5. Delete Hospital");
-            Console.WriteLine("0. Back");
-            choice = ReadInt();
-
-            switch (choice)
+            var hospital = hospitals.FirstOrDefault(h => h.KNumber == id);
+            if (hospital == null)
             {
-                case 1:
-                    Console.Write("New name: ");
-                    hospital.Name = Console.ReadLine();
-                    Console.Clear();
-                    break;
-                case 2:
-                    Console.Write("New address: ");
-                    hospital.Address = Console.ReadLine();
-                    Console.Clear();
-                    break;
-                case 3:
-                    Console.Write("New phone: ");
-                    hospital.PhoneNumber = Console.ReadLine();
-                    Console.Clear();
-                    break;
-                case 4:
-                    ManageDoctors(hospital);
-                    break;
-                case 5:
-                    hospitals = hospitals.Where(h => h.KNumber != id).ToArray();
-                    Console.WriteLine("Hospital deleted.");
-                    return;
+                _output.WriteLine("Hospital not found.");
+                _output.PressKey();
+                return;
             }
-        } while (choice != 0);
- 
-    }
 
-    private void ManageDoctors(Hospital hospital)
-    {
-        int choice;
-        do
-        {
-            Console.WriteLine("\nDoctor Management:");
-            Console.WriteLine("1. Add Doctor");
-            Console.WriteLine("2. Update Doctor");
-            Console.WriteLine("3. Delete Doctor");
-            Console.WriteLine("0. Back");
-            choice = ReadInt();
+            _output.Clear();
+            _output.WriteLine($"Found hospital: \n{hospital.Name}, Address: {hospital.Address}, Phone: {hospital.PhoneNumber}");
 
-            switch (choice)
+            if (hospital.Doctors.Any())
             {
-                case 1:
-                    Console.Write("Doctor ID: ");
-                    int id = ReadInt();
-                    Console.Write("Name: ");
-                    string name = Console.ReadLine();
-                    Console.Write("Specialization: ");
-                    string spec = Console.ReadLine();
-                    hospital.Doctors.Add(new Doctor { KNumber = id, Name = name, Specialization = spec });
-                    Console.Write("Doctor added!");
-                    Console.Clear();
-                    break;
-                case 2:
-                    Console.Write("Doctor ID to update: ");
-                    int did = ReadInt();
-                    var doc = hospital.Doctors.FirstOrDefault(d => d.KNumber == did);
-                    if (doc != null)
-                    {
-                        Console.WriteLine("1. Name\n2. Specialization");
-                        int upd = ReadInt();
-                        if (upd == 1)
+                _output.WriteLine("Doctors:");
+                foreach (var doc in hospital.Doctors)
+                    _output.WriteLine($"ID: {doc.KNumber}, Name: {doc.Name}, Specialization: {doc.Specialization}");
+            }
+            else _output.WriteLine("No doctors in this hospital.");
+
+            _output.PressKey();
+        }
+
+
+        public void AddHospital(ref Hospital[] hospitals)
+        {
+            _output.Write("Enter hospital ID: ");
+            int id = _input.ReadInt();
+            _output.Write("Name: ");
+            string name = _input.ReadLine();
+            _output.Write("Address: ");
+            string address = _input.ReadLine();
+            _output.Write("Phone: ");
+            string phone = _input.ReadLine();
+            Array.Resize(ref hospitals, hospitals.Length + 1);
+            hospitals[^1] = new Hospital { KNumber = id, Name = name, Address = address, PhoneNumber = phone };
+            _output.WriteLine("Hospital added.");
+            _output.PressKey();  
+        }
+
+        public void UpdateHospital(ref Hospital[] hospitals)
+        {
+            _output.Write("Enter hospital ID to update: ");
+            int id = _input.ReadInt();
+
+            var hospital = hospitals.FirstOrDefault(h => h.KNumber == id);
+            if (hospital == null)
+            {
+                _output.WriteLine("Hospital not found.");
+                return;
+            }
+
+            int choice;
+            do
+            {
+                SearchHospital(hospitals, id);
+                _output.WriteLine("\nUpdate:");
+                _output.WriteLine("1. Name");
+                _output.WriteLine("2. Address");
+                _output.WriteLine("3. Phone Number");
+                _output.WriteLine("4. Manage Doctors");
+                _output.WriteLine("5. Delete Hospital");
+                _output.WriteLine("0. Back");
+                choice = _input.ReadInt();
+
+                switch (choice)
+                {
+                    case 1:
+                        _output.Write("New name: ");
+                        hospital.Name = _input.ReadLine();
+                        _output.Clear();
+                        break;
+                    case 2:
+                        _output.Write("New address: ");
+                        hospital.Address = _input.ReadLine();
+                        _output.Clear();
+                        break;
+                    case 3:
+                        _output.Write("New phone: ");
+                        hospital.PhoneNumber = _input.ReadLine();
+                        _output.Clear();
+                        break;
+                    case 4:
+                        ManageDoctors(hospital);
+                        break;
+                    case 5:
+                        hospitals = hospitals.Where(h => h.KNumber != id).ToArray();
+                        _output.WriteLine("Hospital deleted.");
+                        return;
+                }
+            } while (choice != 0);
+            _output.PressKey();
+        }
+
+        private void ManageDoctors(Hospital hospital)
+        {
+            int choice;
+            do
+            {
+                _output.WriteLine("\nDoctor Management:");
+                _output.WriteLine("1. Add Doctor");
+                _output.WriteLine("2. Update Doctor");
+                _output.WriteLine("3. Delete Doctor");
+                _output.WriteLine("0. Back");
+                choice = _input.ReadInt();
+
+                switch (choice)
+                {
+                    case 1:
+                        _output.Write("Doctor ID: ");
+                        int id = _input.ReadInt();
+                        _output.Write("Name: ");
+                        string name = _input.ReadLine();
+                        _output.Write("Specialization: ");
+                        string spec = _input.ReadLine();
+                        hospital.Doctors.Add(new Doctor { KNumber = id, Name = name, Specialization = spec });
+                        _output.Write("Doctor added!");
+                        _output.PressKey();
+                        _output.Clear();
+                        break;
+                    case 2:
+                        _output.Write("Doctor ID to update: ");
+                        int did = _input.ReadInt();
+                        var doc = hospital.Doctors.FirstOrDefault(d => d.KNumber == did);
+                        if (doc != null)
                         {
-                            Console.Write("New Name: ");
-                            doc.Name = Console.ReadLine();
+                            _output.WriteLine("1. Name\n2. Specialization");
+                            int upd = _input.ReadInt();
+                            if (upd == 1)
+                            {
+                                _output.Write("New Name: ");
+                                doc.Name = _input.ReadLine();
+                                _output.WriteLine("Doctor updated.");
+                                _output.PressKey();
+                            }
+                            else if (upd == 2)
+                            {
+                                _output.Write("New Specialization: ");
+                                doc.Specialization = _input.ReadLine();
+                            }
                         }
-                        else if (upd == 2)
-                        {
-                            Console.Write("New Specialization: ");
-                            doc.Specialization = Console.ReadLine();
-                        }
-                    }
-                    else Console.WriteLine("Doctor not found.");
-                    break;
-                case 3:
-                    Console.Write("Doctor ID to delete: ");
-                    int delId = ReadInt();
-                    hospital.Doctors.RemoveAll(d => d.KNumber == delId);
-                    Console.WriteLine("Doctor deleted.");
-                    break;
-            }
-        } while (choice != 0);
-    }
+                        else _output.WriteLine("Doctor not found.");
+                        break;
+                    case 3:
+                        _output.Write("Doctor ID to delete: ");
+                        int delId = _input.ReadInt();
+                        hospital.Doctors.RemoveAll(d => d.KNumber == delId);
+                        _output.WriteLine("Doctor deleted.");
+                        _output.PressKey();
+                        break;
+                }
+            } while (choice != 0);
+        }
 
-    public static int ReadInt()
-    {
-        int value;
-        while (!int.TryParse(Console.ReadLine(), out value) || value < 0)
-            Console.Write("Enter a valid positive number: ");
-        return value;
-    }
-
-    public void MainMenu(ref Hospital[] hospitals)
-    {
         
-
-        int mainchoice = 0;
-        do
-        {
-            Console.Clear();
-            Console.WriteLine("1. List Hospitals");
-            Console.WriteLine("2. Search Hospital");
-            Console.WriteLine("3. Add Hospital");
-            Console.WriteLine("4. Update Hospital");
-            Console.WriteLine("0. Exit");
-            Console.Write("Choice: ");
-            mainchoice = ReadInt();
-
-            Console.Clear();
-            switch (mainchoice)
-            {
-                case 1:
-                    DisplayHospitals(hospitals);
-                    break;
-                case 2:
-                    Console.Write("Enter ID: ");
-                    int id = HospitalService.ReadInt();
-                    SearchHospital(hospitals, id);
-                    break;
-                case 3:
-                    AddHospital(ref hospitals);
-                    break;
-                case 4:
-                    UpdateHospital(ref hospitals);
-                    break;
-            }
-
-        } while (mainchoice != 0);
-
-        Console.WriteLine("Bye!");
     }
 }
