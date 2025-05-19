@@ -2,7 +2,7 @@
 
 namespace DocsAndHospitals.Factories
 {
-    public static class HospitalFactory
+    public class HospitalFactory
     {
         public static Hospital[] CreateMany() => new[]
         {
