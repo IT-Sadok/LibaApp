@@ -17,13 +17,6 @@ namespace DocsAndHospitals.Controllers
             _output = output;
         }
 
-        public void ShowAllHospitals()
-        {
-            var hospitals = _service.GetAllHospitals();
-            foreach (var h in hospitals)
-                _output.WriteLine($"ID: {h.KNumber}, Name: {h.Name}, Address: {h.Address}, Phone: {h.PhoneNumber}");
-            _output.PressKey();
-        }
 
         public void Run()
         {
@@ -51,7 +44,7 @@ namespace DocsAndHospitals.Controllers
                         var hospital = _service.GetHospitalById(id);
                         if (hospital != null)
                         {
-                            _output.WriteLine($"ID: {hospital.KNumber}, Name: {hospital.Name}, Address: {hospital.Address}, Phone: {hospital.PhoneNumber}");
+                            DisplayHospitalWithDoctors(hospital);
                             _output.PressKey();
                         }
                         else
@@ -71,6 +64,33 @@ namespace DocsAndHospitals.Controllers
             } while (mainchoice != 0);
 
             _output.WriteLine("Bye!");
+        }
+
+        public void ShowAllHospitals()
+        {
+            var hospitals = _service.GetAllHospitals();
+            foreach (var h in hospitals)
+                _output.WriteLine($"ID: {h.KNumber}, Name: {h.Name}, Address: {h.Address}, Phone: {h.PhoneNumber}");
+            _output.PressKey();
+        }
+
+
+        public void DisplayHospitalWithDoctors(Hospital hospital)
+        {
+            _output.WriteLine($"ID: {hospital.KNumber}, Name: {hospital.Name}, Address: {hospital.Address}, Phone: {hospital.PhoneNumber}");
+
+            if (hospital.Doctors.Any())
+            {
+                _output.WriteLine("\nDoctors:");
+                foreach (var doc in hospital.Doctors)
+                {
+                    _output.WriteLine($"  ID: {doc.KNumber}, Name: {doc.Name}, Specialization: {doc.Specialization}");
+                }
+            }
+            else
+            {
+                _output.WriteLine("\nNo doctors assigned to this hospital.");
+            }
         }
 
 
@@ -102,47 +122,54 @@ namespace DocsAndHospitals.Controllers
             _output.Write("Enter hospital ID to update: ");
             int id = _input.ReadInt();
             var hospital = _service.GetHospitalById(id);
-            if (hospital == null)
+            if (hospital != null)
+            {
+                DisplayHospitalWithDoctors(hospital);
+                _output.PressKey();
+
+                int choice;
+                do
+                {
+                    _output.WriteLine("\nUpdate Hospital:");
+                    _output.WriteLine("1. Name");
+                    _output.WriteLine("2. Address");
+                    _output.WriteLine("3. Phone Number");
+                    _output.WriteLine("4. Manage Doctors");
+                    _output.WriteLine("5. Delete Hospital");
+                    _output.WriteLine("0. Back");
+                    choice = _input.ReadInt();
+
+                    switch (choice)
+                    {
+                        case 1:
+                            _output.Write("New name: ");
+                            _service.UpdateHospital(hospital, name: _input.ReadLine());
+                            break;
+                        case 2:
+                            _output.Write("New address: ");
+                            _service.UpdateHospital(hospital, address: _input.ReadLine());
+                            break;
+                        case 3:
+                            _output.Write("New phone: ");
+                            _service.UpdateHospital(hospital, phone: _input.ReadLine());
+                            break;
+                        case 4:
+                            ManageDoctors(hospital);
+                            break;
+                        case 5:
+                            _service.DeleteHospital(id);
+                            _output.WriteLine("Hospital deleted.");
+                            return;
+                    }
+                } while (choice != 0);
+            }
+            else
             {
                 _output.WriteLine("Hospital not found.");
-                return;
+                _output.PressKey();
             }
 
-            int choice;
-            do
-            {
-                _output.WriteLine("\nUpdate Hospital:");
-                _output.WriteLine("1. Name");
-                _output.WriteLine("2. Address");
-                _output.WriteLine("3. Phone Number");
-                _output.WriteLine("4. Manage Doctors");
-                _output.WriteLine("5. Delete Hospital");
-                _output.WriteLine("0. Back");
-                choice = _input.ReadInt();
-
-                switch (choice)
-                {
-                    case 1:
-                        _output.Write("New name: ");
-                        _service.UpdateHospital(hospital, name: _input.ReadLine());
-                        break;
-                    case 2:
-                        _output.Write("New address: ");
-                        _service.UpdateHospital(hospital, address: _input.ReadLine());
-                        break;
-                    case 3:
-                        _output.Write("New phone: ");
-                        _service.UpdateHospital(hospital, phone: _input.ReadLine());
-                        break;
-                    case 4:
-                        ManageDoctors(hospital);
-                        break;
-                    case 5:
-                        _service.DeleteHospital(id);
-                        _output.WriteLine("Hospital deleted.");
-                        return;
-                }
-            } while (choice != 0);
+           
             _output.PressKey();
         }
 

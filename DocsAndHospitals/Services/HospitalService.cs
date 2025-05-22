@@ -1,25 +1,27 @@
 ﻿using DocsAndHospitals.Models;
 using DocsAndHospitals.Factories;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DocsAndHospitals.Services
 {
     public class HospitalService
     {
-        private Hospital[] _hospitals;
+        private readonly List<Hospital> _hospitals;
+        private readonly HospitalFactory _hospitalFactory;
 
-        public HospitalService()
+        public HospitalService(HospitalFactory hospitalFactory)
         {
-            _hospitals = HospitalFactory.CreateMany();
+            _hospitalFactory = hospitalFactory;
+            _hospitals = _hospitalFactory.CreateMany().ToList();
         }
 
-        public Hospital[] GetAllHospitals() => _hospitals;
+        public Hospital[] GetAllHospitals() => _hospitals.ToArray();
 
         public void AddHospital(Hospital hospital)
         {
-            Array.Resize(ref _hospitals, _hospitals.Length + 1);
-            _hospitals[^1] = hospital;
+            _hospitals.Add(hospital);
         }
 
         public Hospital? GetHospitalById(int id)
@@ -29,16 +31,19 @@ namespace DocsAndHospitals.Services
 
         public bool DeleteHospital(int id)
         {
-            int initialCount = _hospitals.Length;
-            _hospitals = _hospitals.Where(h => h.KNumber != id).ToArray();
-            return _hospitals.Length < initialCount;
+            var hospital = GetHospitalById(id);
+            if (hospital == null)
+                return false;
+
+            return _hospitals.Remove(hospital);
         }
+
 
         public void UpdateHospital(Hospital hospital, string? name = null, string? address = null, string? phone = null)
         {
-            if (name != null) hospital.Name = name;
-            if (address != null) hospital.Address = address;
-            if (phone != null) hospital.PhoneNumber = phone;
+            if (!string.IsNullOrWhiteSpace(name)) hospital.Name = name;
+            if (!string.IsNullOrWhiteSpace(address)) hospital.Address = address;
+            if (!string.IsNullOrWhiteSpace(phone)) hospital.PhoneNumber = phone;
         }
 
         public void AddDoctor(Hospital hospital, Doctor doctor)
