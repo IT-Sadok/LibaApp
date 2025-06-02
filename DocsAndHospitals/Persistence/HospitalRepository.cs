@@ -14,12 +14,13 @@ public static class HospitalRepository
         File.WriteAllText(FilePath, json);
     }
 
-    public static Hospital[] Load()
+    public static List<Hospital> Load()
     {
         if (!File.Exists(FilePath))
-            return Array.Empty<Hospital>();
+            return new List<Hospital>();
 
         string json = File.ReadAllText(FilePath);
-        return JsonSerializer.Deserialize<Hospital[]>(json) ?? Array.Empty<Hospital>();
+        return JsonSerializer.Deserialize<List<Hospital>>(json) ?? new List<Hospital>();
     }
+
 }
