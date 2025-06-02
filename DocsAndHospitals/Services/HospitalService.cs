@@ -1,5 +1,5 @@
 ﻿using DocsAndHospitals.Models;
-using DocsAndHospitals.Factories;
+using DocsAndHospitals.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +9,11 @@ namespace DocsAndHospitals.Services
     public class HospitalService
     {
         private readonly List<Hospital> _hospitals;
-        private readonly HospitalFactory _hospitalFactory;
 
-        public HospitalService(HospitalFactory hospitalFactory)
+        public HospitalService()
         {
-            _hospitalFactory = hospitalFactory;
-            _hospitals = _hospitalFactory.CreateMany().ToList();
+            var loaded = HospitalRepository.Load();
+            _hospitals = loaded.Any() ? loaded.ToList() : new List<Hospital>();
         }
 
         public Hospital[] GetAllHospitals() => _hospitals.ToArray();
@@ -37,7 +36,6 @@ namespace DocsAndHospitals.Services
 
             return _hospitals.Remove(hospital);
         }
-
 
         public void UpdateHospital(Hospital hospital, string? name = null, string? address = null, string? phone = null)
         {
@@ -65,6 +63,11 @@ namespace DocsAndHospitals.Services
         public void DeleteDoctor(Hospital hospital, int doctorId)
         {
             hospital.Doctors.RemoveAll(d => d.KNumber == doctorId);
+        }
+
+        public void SaveToFile()
+        {
+            HospitalRepository.Save(_hospitals);
         }
     }
 }

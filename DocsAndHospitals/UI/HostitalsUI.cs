@@ -28,6 +28,7 @@ namespace DocsAndHospitals.Controllers
                 _output.WriteLine("2. Search Hospital");
                 _output.WriteLine("3. Add Hospital");
                 _output.WriteLine("4. Update Hospital");
+                _output.WriteLine("5. Save Changes");
                 _output.WriteLine("0. Exit");
                 _output.Write("Choice: ");
                 mainchoice = _input.ReadInt();
@@ -58,6 +59,11 @@ namespace DocsAndHospitals.Controllers
                         break;
                     case 4:
                         UpdateHospital();
+                        break;
+                    case 5:
+                        _service.SaveToFile();
+                        _output.WriteLine("Changes saved.");
+                        _output.PressKey();
                         break;
                 }
 
