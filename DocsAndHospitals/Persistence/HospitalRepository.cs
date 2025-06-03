@@ -1,26 +1,32 @@
 ﻿using DocsAndHospitals.Models;
 using System.Text.Json;
 
-namespace DocsAndHospitals.Persistence;
-
-public static class HospitalRepository
+namespace DocsAndHospitals.Persistence
 {
-    private static readonly string FilePath = "hospitals.json";
-
-    public static void Save(IEnumerable<Hospital> hospitals)
+    public class JsonHospitalRepository : IHospitalRepository
     {
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        string json = JsonSerializer.Serialize(hospitals, options);
-        File.WriteAllText(FilePath, json);
-    }
+        private readonly string _filePath;
+        private static readonly JsonSerializerOptions _options = new JsonSerializerOptions { WriteIndented = true };
 
-    public static List<Hospital> Load()
-    {
-        if (!File.Exists(FilePath))
-            return new List<Hospital>();
+        public JsonHospitalRepository(string filePath)
+        {
+            _filePath = filePath;
+        }
 
-        string json = File.ReadAllText(FilePath);
-        return JsonSerializer.Deserialize<List<Hospital>>(json) ?? new List<Hospital>();
+        public List<Hospital> Load()
+        {
+            if (!File.Exists(_filePath))
+                return new List<Hospital>();
+
+            string json = File.ReadAllText(_filePath);
+            return JsonSerializer.Deserialize<List<Hospital>>(json, _options) ?? new List<Hospital>();
+        }
+
+        public void Save(IEnumerable<Hospital> hospitals)
+        {
+            string json = JsonSerializer.Serialize(hospitals, _options);
+            File.WriteAllText(_filePath, json);
+        }
     }
 
 }
