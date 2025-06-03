@@ -1,7 +1,8 @@
 ﻿using DocsAndHospitals.Services;
 using DocsAndHospitals.UI;
 using DocsAndHospitals.Controllers;
-using DocsAndHospitals.Factories; 
+using DocsAndHospitals.Persistence;
+using DocsAndHospitals.Models;
 
 namespace DocsAndHospitals;
 
@@ -11,8 +12,8 @@ internal class Program
     {
         var output = new ConsoleOutput();
         var input = new ConsoleInput();
-        var factory = new HospitalFactory();           
-        var service = new HospitalService(factory);         
+        var repository = new JsonHospitalRepository("hospitals.json");
+        var service = new HospitalService(repository);
         var ui = new HospitalUI(service, input, output);
         ui.Run();
     }
