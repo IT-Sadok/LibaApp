@@ -7,13 +7,17 @@ namespace DocsAndHospitals.Services
 {
     public class HospitalService
     {
-        private readonly List<Hospital> _hospitals;
+        private List<Hospital> _hospitals = new List<Hospital>();
         private readonly IHospitalRepository _repository;
 
         public HospitalService(IHospitalRepository repository)
         {
             _repository = repository;
-            _hospitals = _repository.Load();
+        }
+
+        public async Task InitializeAsync()
+        {
+            _hospitals = await _repository.LoadAsync();
         }
 
         public Hospital[] GetAllHospitals() => _hospitals.ToArray();
@@ -65,9 +69,10 @@ namespace DocsAndHospitals.Services
             hospital.Doctors.RemoveAll(d => d.KNumber == doctorId);
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _repository.Save(_hospitals);
+            await _repository.SaveAsync(_hospitals);
         }
     }
+
 }

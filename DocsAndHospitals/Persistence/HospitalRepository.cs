@@ -13,20 +13,22 @@ namespace DocsAndHospitals.Persistence
             _filePath = filePath;
         }
 
-        public List<Hospital> Load()
+        public async Task<List<Hospital>> LoadAsync()
         {
             if (!File.Exists(_filePath))
                 return new List<Hospital>();
 
-            string json = File.ReadAllText(_filePath);
+            string json = await File.ReadAllTextAsync(_filePath);
             return JsonSerializer.Deserialize<List<Hospital>>(json, _options) ?? new List<Hospital>();
         }
 
-        public void Save(IEnumerable<Hospital> hospitals)
+
+        public async Task SaveAsync(IEnumerable<Hospital> hospitals)
         {
             string json = JsonSerializer.Serialize(hospitals, _options);
-            File.WriteAllText(_filePath, json);
+            await File.WriteAllTextAsync(_filePath, json);
         }
+
     }
 
 }

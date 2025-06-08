@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DocsAndHospitals.Persistence;
 
 public interface IHospitalRepository
-{
-    void Save(IEnumerable<Hospital> hospitals);
-    List<Hospital> Load();
-}
+    {
+        Task<List<Hospital>> LoadAsync();
+        Task SaveAsync(IEnumerable<Hospital> hospitals);
+    }

@@ -61,7 +61,7 @@ namespace DocsAndHospitals.Controllers
                         UpdateHospital();
                         break;
                     case 5:
-                        _service.Save();
+                        _service.SaveAsync();
                         _output.WriteLine("Changes saved.");
                         _output.PressKey();
                         break;
