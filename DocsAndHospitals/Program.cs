@@ -3,6 +3,7 @@ using DocsAndHospitals.UI;
 using DocsAndHospitals.Controllers;
 using DocsAndHospitals.Persistence;
 using DocsAndHospitals.Models;
+using System.Globalization;
 
 namespace DocsAndHospitals;
 
@@ -14,7 +15,9 @@ internal class Program
         var input = new ConsoleInput();
         var repository = new JsonHospitalRepository("hospitals.json");
         var service = new HospitalService(repository);
-        var ui = new HospitalUI(service, input, output);
+        var appointmentManager = new AppointmentManager();
+        var simulation = new SimulationService(appointmentManager);
+        var ui = new HospitalUI(service, input, output, simulation);
         ui.Run();
     }
 }
