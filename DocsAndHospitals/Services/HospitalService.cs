@@ -1,6 +1,5 @@
 ﻿using DocsAndHospitals.Models;
-using DocsAndHospitals.Factories;
-using System;
+using DocsAndHospitals.Persistence;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,13 +7,17 @@ namespace DocsAndHospitals.Services
 {
     public class HospitalService
     {
-        private readonly List<Hospital> _hospitals;
-        private readonly HospitalFactory _hospitalFactory;
+        private List<Hospital> _hospitals = new List<Hospital>();
+        private readonly IHospitalRepository _repository;
 
-        public HospitalService(HospitalFactory hospitalFactory)
+        public HospitalService(IHospitalRepository repository)
         {
-            _hospitalFactory = hospitalFactory;
-            _hospitals = _hospitalFactory.CreateMany().ToList();
+            _repository = repository;
+        }
+
+        public async Task InitializeAsync()
+        {
+            _hospitals = await _repository.LoadAsync();
         }
 
         public Hospital[] GetAllHospitals() => _hospitals.ToArray();
@@ -38,7 +41,6 @@ namespace DocsAndHospitals.Services
             return _hospitals.Remove(hospital);
         }
 
-
         public void UpdateHospital(Hospital hospital, string? name = null, string? address = null, string? phone = null)
         {
             if (!string.IsNullOrWhiteSpace(name)) hospital.Name = name;
@@ -58,13 +60,19 @@ namespace DocsAndHospitals.Services
 
         public void UpdateDoctor(Doctor doctor, string? name = null, string? specialization = null)
         {
-            if (name != null) doctor.Name = name;
-            if (specialization != null) doctor.Specialization = specialization;
+            if (!string.IsNullOrWhiteSpace(name)) doctor.Name = name;
+            if (!string.IsNullOrWhiteSpace(specialization)) doctor.Specialization = specialization;
         }
 
         public void DeleteDoctor(Hospital hospital, int doctorId)
         {
             hospital.Doctors.RemoveAll(d => d.KNumber == doctorId);
         }
+
+        public async Task SaveAsync()
+        {
+            await _repository.SaveAsync(_hospitals);
+        }
     }
+
 }
