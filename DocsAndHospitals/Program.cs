@@ -18,6 +18,6 @@ internal class Program
         var appointmentManager = new AppointmentManager();
         var simulation = new SimulationService(appointmentManager);
         var ui = new HospitalUI(service, input, output, simulation);
-        ui.Run();
+        ui.Run();//
     }
 }
