@@ -29,4 +29,20 @@ public class AppointmentManager
             _semaphore.Release(); 
         }
     }
+
+    public bool TryBookSlotAtomic(Slot slot, Patient patient)
+    {
+        var original = Interlocked.CompareExchange(ref slot.BookedPatient, patient, null);
+        if(original == null)
+        {
+            Console.WriteLine($" {patient.Name} get slot {slot.Start.Day} {slot.Start.ToString("MMMM", new CultureInfo("en-US"))} {slot.Start.Year}, time: {slot.Start.TimeOfDay}");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine($" {patient.Name} mistake. slot unavailable");
+            return false;
+        }
+    }
 }
+

@@ -39,16 +39,18 @@ namespace DocsAndHospitals.Services
             var slot = doctor.Slots[0];
 
 
-            var task1 = Task.Run(async () =>
-            {
+            var task1 = Task.Run(() =>
+            {   
                 Console.WriteLine("[Pat 1] trying...");
-                await _appointmentManager.TryBookSlotAsync(doctor, slot, patient1);
+                //await _appointmentManager.TryBookSlotAsync(doctor, slot, patient1);
+                _appointmentManager.TryBookSlotAtomic(slot, patient1);  
             });
 
-            var task2 = Task.Run(async () =>
+            var task2 = Task.Run(()  =>
             {
                 Console.WriteLine("[Pat 2] trying...");
-                await _appointmentManager.TryBookSlotAsync(doctor, slot, patient2);
+                //await _appointmentManager.TryBookSlotAsync(doctor, slot, patient2);
+                _appointmentManager.TryBookSlotAtomic(slot, patient2);  
             });
 
             await Task.WhenAll(task1, task2);

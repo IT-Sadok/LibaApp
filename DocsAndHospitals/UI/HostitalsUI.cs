@@ -20,7 +20,7 @@ namespace DocsAndHospitals.Controllers
         }
 
 
-        public async void Run()
+        public async Task Run()
         {
             int mainchoice;
             do

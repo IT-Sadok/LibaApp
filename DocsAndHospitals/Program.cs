@@ -9,7 +9,7 @@ namespace DocsAndHospitals;
 
 internal class Program
 {
-    static void Main()
+    static async Task Main(string[] args)
     {
         var output = new ConsoleOutput();
         var input = new ConsoleInput();
@@ -18,6 +18,6 @@ internal class Program
         var appointmentManager = new AppointmentManager();
         var simulation = new SimulationService(appointmentManager);
         var ui = new HospitalUI(service, input, output, simulation);
-        ui.Run();
+        await ui.Run();
     }
 }
