@@ -13,7 +13,7 @@ namespace DocsAndHospitals.Services
             _appointmentManager = appointmentManager;
         }
 
-        public void RunRaceConditionSimulation()
+        public async Task RunRaceConditionSimulationAsync()
         {
             Console.WriteLine("=== Simulation ===");
 
@@ -29,36 +29,33 @@ namespace DocsAndHospitals.Services
                 {
                     new Slot
                     {
-                        Start = new DateTime(2025, 6, 9, 10, 0, 0), 
+                        Start = new DateTime(2025, 6, 9, 10, 0, 0),
                         Duration = TimeSpan.FromMinutes(30),
                         BookedPatient = null
-                    }
+                    }               
                 }
             };
 
             var slot = doctor.Slots[0];
 
 
-            var thread1 = new Thread(() =>
+            var task1 = Task.Run(async () =>
             {
                 Console.WriteLine("[Pat 1] trying...");
-                _appointmentManager.TryBookSlot(doctor, slot, patient1);
+                await _appointmentManager.TryBookSlotAsync(doctor, slot, patient1);
             });
 
-            var thread2 = new Thread(() =>
+            var task2 = Task.Run(async () =>
             {
                 Console.WriteLine("[Pat 2] trying...");
-                _appointmentManager.TryBookSlot(doctor, slot, patient2);
+                await _appointmentManager.TryBookSlotAsync(doctor, slot, patient2);
             });
 
-            thread1.Start();
-            thread2.Start();
+            await Task.WhenAll(task1, task2);
 
-            thread1.Join();
-            thread2.Join();
+            Console.WriteLine($"Slot under patient:: {slot.BookedPatient?.Name ?? "Nobody here"}");
 
-            Console.WriteLine($"Slot under patient:: {slot.BookedPatient.Name ?? "Nobody here"}");
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
         }
     }
 }

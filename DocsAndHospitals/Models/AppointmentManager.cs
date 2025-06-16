@@ -1,15 +1,19 @@
 ﻿using DocsAndHospitals.Models;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class AppointmentManager
 {
-    private readonly object _lock = new();
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-    public bool TryBookSlot(Doctor doctor, Slot slot, Patient patient)
+    public async Task<bool> TryBookSlotAsync(Doctor doctor, Slot slot, Patient patient)
     {
-        lock (_lock)
+        await _semaphore.WaitAsync();
+        try
         {
-            Thread.Sleep(200);
+            await Task.Delay(200); 
+
             if (slot.BookedPatient == null)
             {
                 slot.BookedPatient = patient;
@@ -17,8 +21,12 @@ public class AppointmentManager
                 return true;
             }
 
-            Console.WriteLine($" {patient.Name} mistake. slot unavalible");
+            Console.WriteLine($" {patient.Name} mistake. slot unavailable");
             return false;
+        }
+        finally
+        {
+            _semaphore.Release(); 
         }
     }
 }

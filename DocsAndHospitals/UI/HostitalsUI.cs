@@ -20,7 +20,7 @@ namespace DocsAndHospitals.Controllers
         }
 
 
-        public void Run()
+        public async void Run()
         {
             int mainchoice;
             do
@@ -69,7 +69,7 @@ namespace DocsAndHospitals.Controllers
                         _output.PressKey();
                         break;
                     case 6:
-                        _simulation.RunRaceConditionSimulation();
+                        await _simulation.RunRaceConditionSimulationAsync();
                         _output.PressKey();
                         break;
 
