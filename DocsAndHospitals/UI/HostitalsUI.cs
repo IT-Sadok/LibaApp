@@ -9,16 +9,18 @@ namespace DocsAndHospitals.Controllers
         private readonly HospitalService _service;
         private readonly IInput _input;
         private readonly IOutput _output;
+        private readonly SimulationService _simulation;
 
-        public HospitalUI(HospitalService service, IInput input, IOutput output)
+        public HospitalUI(HospitalService service, IInput input, IOutput output, SimulationService simulation)
         {
             _service = service;
             _input = input;
             _output = output;
+            _simulation = simulation;
         }
 
 
-        public void Run()
+        public async Task Run()
         {
             int mainchoice;
             do
@@ -29,6 +31,7 @@ namespace DocsAndHospitals.Controllers
                 _output.WriteLine("3. Add Hospital");
                 _output.WriteLine("4. Update Hospital");
                 _output.WriteLine("5. Save Changes");
+                _output.WriteLine("6. Simulation");
                 _output.WriteLine("0. Exit");
                 _output.Write("Choice: ");
                 mainchoice = _input.ReadInt();
@@ -65,6 +68,11 @@ namespace DocsAndHospitals.Controllers
                         _output.WriteLine("Changes saved.");
                         _output.PressKey();
                         break;
+                    case 6:
+                        await _simulation.RunRaceConditionSimulationAsync();
+                        _output.PressKey();
+                        break;
+
                 }
 
             } while (mainchoice != 0);
