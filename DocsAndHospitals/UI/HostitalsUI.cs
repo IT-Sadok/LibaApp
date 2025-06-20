@@ -10,18 +10,38 @@ namespace DocsAndHospitals.Controllers
         private readonly IInput _input;
         private readonly IOutput _output;
         private readonly SimulationService _simulation;
+        private readonly AuthService _authService;
+        private readonly AuthUI _authUI;
+        private User? _currentUser;
 
-        public HospitalUI(HospitalService service, IInput input, IOutput output, SimulationService simulation)
+
+        public HospitalUI(HospitalService service, IInput input, IOutput output, SimulationService simulation, AuthService authService, AuthUI authUI)
         {
             _service = service;
             _input = input;
             _output = output;
             _simulation = simulation;
+            _authService = authService;
+            _authUI = authUI;
         }
 
 
         public async Task Run()
         {
+
+            var success = false;
+
+            do
+            {
+                _output.WriteLine("Welcome to Hospital Management System!");
+                _output.WriteLine("Log in or Sign in 1/2:");
+                int choice = _input.ReadInt();
+                if (choice == 1)
+                    success = _authUI.Register();
+                else if (choice == 2)
+                   success = _authUI.Login();
+            }
+            while (!success);
             int mainchoice;
             do
             {

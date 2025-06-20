@@ -17,7 +17,14 @@ internal class Program
         var service = new HospitalService(repository);
         var appointmentManager = new AppointmentManager();
         var simulation = new SimulationService(appointmentManager);
-        var ui = new HospitalUI(service, input, output, simulation);
+
+        var repo = new AuthRepository();
+        var hasher = new PasswordHasher();
+        var authService = new AuthService(repo, hasher);
+        var authUI = new AuthUI(authService, input, output);
+
+        var ui = new HospitalUI(service, input, output, simulation, authService, authUI);
         await ui.Run();
+
     }
 }
